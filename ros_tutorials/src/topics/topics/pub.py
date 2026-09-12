@@ -36,7 +36,10 @@ class Pub(Node):
         super().__init__('pub')
 
         # TODO: Create a publisher for String messages on the "topic" topic with a queue size of 10
+        self.publisher = self.create_publisher(String, 'topic', 10) 
         # TODO: Create a timer that calls self.timer_callback every 1 second (1.0)
+        self.timer = self.create_timer(1, self.timer_callback)
+        self.i = 0
 
         # create_timer:
         #   Creates a repeating callback based on a time interval.
@@ -58,14 +61,19 @@ class Pub(Node):
     # where i is an incremented intenger, and publish it to the topic.
     def timer_callback(self):
         # TODO: Create message object of type String
+        msg = String()
         # TODO: Set its data attribute to "Message {i}!" where i is an incremented integer
+        self.i += 1
+        msg.data = f"Message {self.i}!"
         # TODO: Publish the message using the publisher created in __init__
-        pass
+        self.publisher.publish(msg)
 
-
-if __name__ == '__main__':
+def main():
     rclpy.init()
     node = Pub()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
