@@ -57,7 +57,7 @@ class Pub(Node):
         #   Typical use: send data to subscribers on the topic.
 
     # Create a timer callback that publishes a message every second.
-    # The callback should create a String message, set its data to "Message {i}!", 
+    # The callback should create a String message, set its data to "Message {self.i}!", 
     # where i is an incremented intenger, and publish it to the topic.
     def timer_callback(self):
         # TODO: Create message object of type String
@@ -65,6 +65,7 @@ class Pub(Node):
         # TODO: Set its data attribute to "Message {i}!" where i is an incremented integer
         self.i += 1
         msg.data = f"Message {self.i}!"
+        # TODO: Set its data attribute to "Message {self.i}!" where i is an incremented integer
         # TODO: Publish the message using the publisher created in __init__
         self.publisher.publish(msg)
 
