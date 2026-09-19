@@ -17,6 +17,7 @@
 
 import rclpy
 from rclpy.node import Node
+from interfaces.srv import RandomNumber
 
 # Service design:
 #   Request: min_value, max_value
@@ -42,6 +43,9 @@ class ServiceClient(Node):
         # TODO: Create a client for the random-number service
         # TODO: Wait for the service to be available
         # TODO: Create a request containing min and max values
+        self.client = self.create_client(RandomNumber, 'generate_random_number')
+        while(not self.client.wait_for_service(timeout_sec=1.0)):
+            self.get_logger().info('Service not available yet, trying again...')
 
         # self.create_client:
         #   Creates a service client used to call a ROS service.
@@ -64,7 +68,11 @@ class ServiceClient(Node):
     def send_request(self):
         # TODO: Build a RandomNumber.Request object with a min and max range
         # TODO: Call the service asynchronously
-        #
+        request = RandomNumber.Request()
+        request.min_value = 1
+        request.max_value = 10
+        return self.client.call_async(request)
+
         # client.call_async:
         #   Sends the request without blocking and returns a Future for the response.
         #   Usage: self.client.call_async(request)

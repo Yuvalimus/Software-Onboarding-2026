@@ -28,6 +28,8 @@ from rclpy.node import Node
 #
 # Here, import RandomNumber from the interfaces.srv module
 # RandomNumber is the custom Service type.
+from interfaces.srv import RandomNumber
+from random import randint
 
 # ROS 2 boilerplate pattern:
 # 1. Import rclpy and the base Node class.
@@ -47,6 +49,7 @@ class ServiceServer(Node):
         # TODO: Create a service for the random-number request/response type.
         # TODO: Use a callback method such as self.generate_random_number
         # TODO: Register the service under a topic name like 'generate_random_number'
+        self.create_service(RandomNumber, 'generate_random_number', self.generate_random_number)
 
         # self.create_service:
         #   Creates a service server that waits for requests and invokes a callback.
@@ -72,6 +75,7 @@ class ServiceServer(Node):
         # TODO: Generate a random integer in the requested range
         # TODO: Set response.random_number to the generated value
         # TODO: Return response
+        response.random_number = randint(request.min_value, request.max_value)
         return response
 
 def main():
