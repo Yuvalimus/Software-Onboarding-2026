@@ -18,6 +18,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
+from interfaces.action import SleepFor 
 
 # Action design:
 #   Goal: seconds (float64)
@@ -45,6 +46,7 @@ class Client(Node):
         # TODO: Create an action client for the SleepFor action type.
         # TODO: Wait until the action server is available.
         # TODO: Construct a goal with a duration value.
+        self.client = ActionClient(self, SleepFor, 'sleep_for')
 
         # ActionClient():
         #   Creates an action client used to send goals to a ROS action server.
@@ -74,6 +76,11 @@ class Client(Node):
         # TODO: Use a feedback callback that logs feedback from the server.
         # NOTE: The feedback callback can be attached when you call the server's 
         #       send_goal_async() method.
+        self.client.wait_for_server()
+        sleep_goal = SleepFor.Goal()
+        sleep_goal.seconds = seconds
+        return self.client.send_goal_async(sleep_goal, feedback_callback=self.feedback_callback)
+
         pass
 
     def feedback_callback(self, feedback_msg):
@@ -81,9 +88,12 @@ class Client(Node):
         #   The data returned by the action server while the task is in progress.
         #   Usage: feedback_msg.feedback.remaining
         # TODO: Read and log feedback_msg.feedback.
+        self.get_logger().info(f'{feedback_msg.feedback}')
+
         pass
 
 def main():
+    rclpy.init()
     node = Client()
     future = node.send_goal(10.0) # 10 seconds sleep duration
     rclpy.spin_until_future_complete(node, future)

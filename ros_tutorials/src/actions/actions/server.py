@@ -23,6 +23,8 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionServer
+from interfaces.action import SleepFor
+import time
 
 # Action design:
 #   Goal: seconds (float64)
@@ -50,6 +52,7 @@ class Server(Node):
         # TODO: Create an action server for the SleepFor action type.
         # TODO: Use an execute_callback that handles the goal.
         # TODO: Publish feedback while sleeping.
+        self.action_server = ActionServer(self, SleepFor, 'sleep_for',self.execute_callback)
 
         # ActionServer():
         #   Creates an action server that receives goals and manages execution.
@@ -75,7 +78,19 @@ class Server(Node):
         # NOTE: There are several ways to handle the feedback mechanism here, but the most intuitive 
         #       is probably to use a loop that sleeps for a short interval (e.g., 0.1 seconds) and 
         #       updates the remaining time in feedback.
-        #
+        feedback_msg = SleepFor.Feedback()
+        i = 0
+        while (i < goal_handle.request.seconds - .05):
+            time.sleep(0.1)
+            feedback_msg.remaining = goal_handle.request.seconds - i
+            goal_handle.publish_feedback(feedback_msg)
+            i += .1
+            self.get_logger().info(f"{i}")
+        goal_handle.succeed()
+        result = SleepFor.Result()
+        result.success = True
+        return result
+
         # goal_handle.publish_feedback(feedback_msg):
         #   Sends a feedback message to the client while the action is running.
         #   Usage: goal_handle.publish_feedback(feedback)
